@@ -1,0 +1,188 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+body {
+    font-family: sans-serif;
+    min-height: 100vh;
+    background-color: white;
+    font-size: 1rem;
+}
+
+img {
+    width: 100%;
+}
+
+h1 {
+    font-size: 4rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1rem;
+}
+
+p {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    max-width: 60vw;
+    line-height: 1.5rem;
+}
+
+li {
+    font-size: 1rem;
+    margin-left: 1rem;
+    line-height: 1.75rem;
+}
+
+.h1_margins {
+    margin-top: 20rem;
+}
+
+.h1_margins_visualizatios {
+    margin-top: 6rem;
+}
+
+.wrapper {
+    display: flex;
+    flex-flow: row wrap;
+    text-align: left;
+}
+
+.wrapper > * {
+    padding: 10px;
+    margin: 10px;
+    flex: 1 100%;
+    border-radius: 10px;
+}
+
+/* .header {
+    background: blue;
+    height: 120px;
+} */
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 100px;
+
+    background: white;
+    outline-width: 1px;
+    outline-style: solid;
+    outline-color: blue;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+
+    /* background-color: yellow; */
+}
+
+.logo {
+    font-size: 1rem;
+    color: blue;
+    text-decoration: none;
+    font-weight: 700;
+    margin-left: -45px;
+}
+
+.navbar {
+    margin-left: auto;
+}
+
+.navbar a {
+    position: relative;
+    margin-left: 30px;
+
+    font-size: 1rem;
+    color: blue;
+    font-weight: bold;
+    text-decoration: none;
+    /* margin-left: 40px; */
+}
+
+.navbar a::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: blue;
+    transition: .3s;
+}
+
+.navbar a:hover::before {
+    width: 100%;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background-color: blue;
+    margin: 0;
+    width: 100%;
+}
+
+.space_after_intro {
+    margin-bottom: 3rem;
+}
+
+.space_before_heading {
+    margin-top: 2rem;
+}
+
+.space_before_paragraph {
+    margin-bottom: 1rem;
+}
+
+.main {
+    /* background: purple; */
+    /* margin-top: 70px; */
+    height: 30px;
+    padding: 40px;
+    font-size: 20px;
+    text-align: left;
+}
+
+/* .aside1 {
+    background-color: yellow;
+} */
+
+/* Responsive */
+
+/* @media all and (min-width: 800px) {
+    .main {
+        flex: 2;
+    }
+    .aside1 {
+        order: 2;
+    }
+    .main {
+        order: 1;
+    }
+    .footer {
+        order: 4;
+    }
+} */
+
+/* @media all and (min-width: 600px) {
+    .aside {
+        flex: 1;
+    }
+} */
+
+/* SVG Art */
+
+.background {
+    background-color: lightblue;
+}
