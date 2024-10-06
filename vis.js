@@ -24,7 +24,7 @@
 
 async function render() {
     // load data
-    const data = await d3.csv("./dataset/videogames_wide.csv");
+    const data = await d3.csv("./data/videogames_long.csv");
     console.log(data);  // This will print the data to the console to confirm it's being loaded
   
     // create a bar chart
@@ -44,3 +44,4 @@ async function render() {
 }
 
 render();
+

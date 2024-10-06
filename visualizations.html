@@ -1,158 +1,390 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Clark Tanquerido</title>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clark Tanquerido</title>
 
-        <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 
-        <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vega-lite-api@5.6.0"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vega-tooltip"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
-        <script>
-            
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite-api@5.6.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-tooltip"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+    <style id="vega-tooltip-style">
+        #vg-tooltip-element {
+            visibility: hidden;
+            padding: 8px;
+            position: fixed;
+            z-index: 1000;
+            font-family: sans-serif;
+            font-size: 11px;
+            border-radius: 3px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid #d9d9d9;
+            color: black;
+        }
+        #vg-tooltip-element.visible {
+            visibility: visible;
+        }
+        #vg-tooltip-element h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+        #vg-tooltip-element table {
+            border-spacing: 0;
+        }
+        #vg-tooltip-element table tr {
+            border: none;
+        }
+        #vg-tooltip-element table tr td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-top: 2px;
+            padding-bottom: 2px;
+        }
+        #vg-tooltip-element table tr td.key {
+            color: #808080;
+            max-width: 150px;
+            text-align: right;
+            padding-right: 4px;
+        }
+        #vg-tooltip-element table tr td.value {
+            display: block;
+            max-width: 300px;
+            max-height: 7em;
+            text-align: left;
+        }
+        #vg-tooltip-element.dark-theme {
+            background-color: rgba(32, 32, 32, 0.9);
+            border: 1px solid #f5f5f5;
+            color: white;
+        }
+        #vg-tooltip-element.dark-theme td.key {
+            color: #bfbfbf;
+        }
+    </style>
+
+    <style id="vega-embed-style">
+        .vega-embed {
+            position: relative;
+            display: inline-block;
+            box-sizing: border-box;
+        }
+        .vega-embed.has-actions {
+            padding-right: 38px;
+        }
+        .vega-embed details:not([open]) > :not(summary) {
+            display: none !important;
+        }
+        .vega-embed summary {
+            list-style: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 6px;
+            z-index: 1000;
+            background: white;
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            color: #1b1e23;
+            border: 1px solid #aaa;
+            border-radius: 999px;
+            opacity: 0.2;
+            transition: opacity 0.4s ease-in;
+            cursor: pointer;
+            line-height: 0px;
+        }
+        .vega-embed summary::-webkit-details-marker {
+            display: none;
+        }
+        .vega-embed summary:active {
+            box-shadow: #aaa 0px 0px 0px 1px inset;
+        }
+        .vega-embed summary svg {
+            width: 14px;
+            height: 14px;
+        }
+        .vega-embed details[open] summary {
+            opacity: 0.7;
+        }
+        .vega-embed:hover summary, .vega-embed:focus-within summary {
+            opacity: 1 !important;
+            transition: opacity 0.2s ease;
+        }
+        .vega-embed .vega-actions {
+            position: absolute;
+            z-index: 1001;
+            top: 35px;
+            right: -9px;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 8px;
+            padding-top: 8px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.2);
+            border: 1px solid #d9d9d9;
+            background: white;
+            animation-duration: 0.15s;
+            animation-name: scale-in;
+            animation-timing-function: cubic-bezier(0.2, 0, 0.13, 1.5);
+            text-align: left;
+        }
+        .vega-embed .vega-actions a {
+            padding: 8px 16px;
+            font-family: sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            color: #434a56;
+            text-decoration: none;
+        }
+        .vega-embed .vega-actions a:hover, .vega-embed .vega-actions a:focus {
+            background-color: #f7f7f9;
+            color: black;
+        }
+        .vega-embed .vega-actions::before, .vega-embed .vega-actions::after {
+            content: "";
+            display: inline-block;
+            position: absolute;
+        }
+        .vega-embed .vega-actions::before {
+            left: auto;
+            right: 14px;
+            top: -16px;
+            border: 8px solid rgba(0, 0, 0, 0);
+            border-bottom-color: #d9d9d9;
+        }
+        .vega-embed .vega-actions::after {
+            left: auto;
+            right: 15px;
+            top: -14px;
+            border: 7px solid rgba(0, 0, 0, 0);
+            border-bottom-color: #fff;
+        }
+        .vega-embed .chart-wrapper.fit-x {
+            width: 100%;
+        }
+        .vega-embed .chart-wrapper.fit-y {
+            height: 100%;
+        }
+
+        .vega-embed-wrapper {
+            max-width: 100%;
+            overflow: auto;
+            padding-right: 14px;
+        }
+
+        @keyframes scale-in {
+            from {
+                opacity: 0;
+                transform: scale(0.6);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+
+    <script>
         const options = {
             config: {
-            // Vega-Lite default configuration
+                // Vega-Lite default configuration
             },
             init: (view) => {
-            // initialize tooltip handler
-            view.tooltip(new vegaTooltip.Handler().call);
+                // initialize tooltip handler
+                view.tooltip(new vegaTooltip.Handler().call);
             },
             view: {
-            // view constructor options
-            // remove the loader if you don't want to default to vega-datasets!
-            loader: vega.loader({
-                baseURL: "https://cdn.jsdelivr.net/npm/vega-datasets@2/",
-            }),
-            renderer: "canvas",
+                // view constructor options
+                loader: vega.loader({
+                    baseURL: "https://cdn.jsdelivr.net/npm/vega-datasets@2/",
+                }),
+                renderer: "canvas",
             },
         };
 
         // register vega and vega-lite with the API
         vl.register(vega, vegaLite, options);
-        </script>
-        <style>
+    </script>
 
-        </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">Clark Tanquerido</a>
+        <nav class="navbar">
+            <a href="index.html">Home</a>
+            <a href="visualizations.html">Visualizations</a>
+        </nav>
+    </header>
 
-    </head>
+    <div class="wrapper">
+        <article class="main">
+            <h1 class="space_before_paragraph h1_margins_visualizatios">Visualizations</h1>
+            <hr>
 
-    <body>
-        <header class="header">
-            <a href="index.html" class="logo">Clark Tanquerido</a>
+            <h2 class="space_before_paragraph space_before_heading">Assignment 02. <br>SVG Art.</h2>
+            <p class="space_before_paragraph">A picture of a boat sailing through a lake near the mountains, waiting for the sun to set.</p>
+            <svg width="100%" height="500px" class="background">
+                <!-- sun -->
+                <circle cx="950" cy="250" r="150" fill="yellow"/>
+                <circle cx="950" cy="250" r="175" fill="yellow" fill-opacity="0.5"/>
+                <circle cx="950" cy="250" r="215" fill="yellow" fill-opacity="0.25"/>
+                <circle cx="950" cy="250" r="275" fill="yellow" fill-opacity="0.1"/>
+                <circle cx="950" cy="250" r="325" fill="yellow" fill-opacity="0.03"/>
+                  
+                <!-- mountains -->
+                <polygon points="-100,300 0,100 100,300" fill="darkgreen" />
+                <polygon points="100,300 200,50 300,300" fill="green" />
+                <polygon points="0,300 100,150 200,300" fill="lightgreen" />
 
-            <nav class="navbar">
-                <a href="index.html">Home</a>
-                <a href="visualizations.html">Visualizations</a>
-            </nav>
-        </header>
+                <polygon points="200,300 300,100 400,300" fill="darkgreen" />
+                <polygon points="400,300 500,50 600,300" fill="green" />
+                <polygon points="300,300 400,150 500,300" fill="lightgreen" />
 
-        <div class="wrapper">
-            <article class="main">
-                <h1 class="space_before_paragraph h1_margins_visualizatios">Visualizations</h1>
-                <hr>
+                <polygon points="500,300 600,100 700,300" fill="darkgreen" />
+                <polygon points="700,300 800,50 900,300" fill="green" />
+                <polygon points="600,300 700,150 800,300" fill="lightgreen" />
 
-                <h2 class="space_before_paragraph space_before_heading">Assignment 02. <br>SVG Art.</h2>
-                <p class="space_before_paragraph">A picture of a boat sailing through a lake near the mountains, waiting for the sun to set.</p>
-                    <svg width="100%" height="500px" class="background">
-                        <!-- sun -->
-                        <circle cx="950" cy="250" r="150" fill="yellow"/>
-                        <circle cx="950" cy="250" r="175" fill="yellow" fill-opacity="0.5"/>
-                        <circle cx="950" cy="250" r="215" fill="yellow" fill-opacity="0.25"/>
-                        <circle cx="950" cy="250" r="275" fill="yellow" fill-opacity="0.1"/>
-                        <circle cx="950" cy="250" r="325" fill="yellow" fill-opacity="0.03"/>
-                          
-                        <!-- mountains -->
-                        <polygon points="-100,300 0,100 100,300" fill="darkgreen" />
-                        <polygon points="100,300 200,50 300,300" fill="green" />
-                        <polygon points="0,300 100,150 200,300" fill="lightgreen" />
+                <polygon points="800,300 900,100 1000,300" fill="darkgreen" />
+                <polygon points="1000,300 1100,50 1200,300" fill="green" />
+                <polygon points="900,300 1000,150 1100,300" fill="lightgreen" />
 
-                        <polygon points="200,300 300,100 400,300" fill="darkgreen" />
-                        <polygon points="400,300 500,50 600,300" fill="green" />
-                        <polygon points="300,300 400,150 500,300" fill="lightgreen" />
+                <polygon points="1100,300 1200,100 1300,300" fill="darkgreen" />
+                
+                <!-- mountaintop -->
+                <polygon points="0,100 -80,140 20,140" fill="white" />
+                <polygon points="200,50 180,90 220,90" fill="white" />
 
-                        <polygon points="500,300 600,100 700,300" fill="darkgreen" />
-                        <polygon points="700,300 800,50 900,300" fill="green" />
-                        <polygon points="600,300 700,150 800,300" fill="lightgreen" />
+                <polygon points="300,100 280,140 320,140" fill="white" />
+                <polygon points="500,50 480,90 520,90" fill="white" />
 
-                        <polygon points="800,300 900,100 1000,300" fill="darkgreen" />
-                        <polygon points="1000,300 1100,50 1200,300" fill="green" />
-                        <polygon points="900,300 1000,150 1100,300" fill="lightgreen" />
+                <polygon points="600,100 580,140 620,140" fill="white" />
+                <polygon points="800,50 780,90 820,90" fill="white" />
 
-                        <polygon points="1100,300 1200,100 1300,300" fill="darkgreen" />
-                        
-                        <!-- mountaintop -->
-                        <polygon points="0,100 -80,140 20,140" fill="white" />
-                        <polygon points="200,50 180,90 220,90" fill="white" />
+                <polygon points="900,100 880,140 920,140" fill="white" />
+                <polygon points="1100,50 1080,90 1120,90" fill="white" />
 
-                        <polygon points="300,100 280,140 320,140" fill="white" />
-                        <polygon points="500,50 480,90 520,90" fill="white" />
+                <polygon points="1200,100 1180,140 1220,140" fill="white" />
 
-                        <polygon points="600,100 580,140 620,140" fill="white" />
-                        <polygon points="800,50 780,90 820,90" fill="white" />
+                <!-- <circle cx="250" cy="250" r="100" fill="green"/>
 
-                        <polygon points="900,100 880,140 920,140" fill="white" />
-                        <polygon points="1100,50 1080,90 1120,90" fill="white" />
+                <rect x="900" y="70" width="40" height="80" fill="blue"/> -->
 
-                        <polygon points="1200,100 1180,140 1220,140" fill="white" />
+                <!-- ocean -->
+                 <rect x="0" y="300" width="100%" height="200" fill="blue"/>
 
-                        <!-- <circle cx="250" cy="250" r="100" fill="green"/>
+                 <!-- ocean waves -->
+                 <line x1="50" y1="350" x2="150" y2="350" stroke="white" stroke-width="2" />
+                 <line x1="100" y1="360" x2="180" y2="360" stroke="white" stroke-width="2" />
+                 <line x1="80" y1="370" x2="160" y2="370" stroke="white" stroke-width="2" />
 
-                        <rect x="900" y="70" width="40" height="80" fill="blue"/> -->
+                 <line x1="150" y1="450" x2="250" y2="450" stroke="white" stroke-width="2" />
+                 <line x1="200" y1="460" x2="280" y2="460" stroke="white" stroke-width="2" />
+                 <line x1="180" y1="470" x2="260" y2="470" stroke="white" stroke-width="2" />
 
-                        <!-- ocean -->
-                         <rect x="0" y="300" width="100%" height="200" fill="blue"/>
+                 <line x1="300" y1="400" x2="400" y2="400" stroke="white" stroke-width="2" />
+                 <line x1="350" y1="410" x2="430" y2="410" stroke="white" stroke-width="2" />
+                 <line x1="330" y1="420" x2="410" y2="420" stroke="white" stroke-width="2" />
 
-                         <!-- ocean waves -->
-                         <line x1="50" y1="350" x2="150" y2="350" stroke="white" stroke-width="2" />
-                         <line x1="100" y1="360" x2="180" y2="360" stroke="white" stroke-width="2" />
-                         <line x1="80" y1="370" x2="160" y2="370" stroke="white" stroke-width="2" />
+                 <line x1="850" y1="350" x2="950" y2="350" stroke="white" stroke-width="2" />
+                 <line x1="900" y1="360" x2="980" y2="360" stroke="white" stroke-width="2" />
+                 <line x1="880" y1="370" x2="960" y2="370" stroke="white" stroke-width="2" />
 
-                         <line x1="150" y1="450" x2="250" y2="450" stroke="white" stroke-width="2" />
-                         <line x1="200" y1="460" x2="280" y2="460" stroke="white" stroke-width="2" />
-                         <line x1="180" y1="470" x2="260" y2="470" stroke="white" stroke-width="2" />
+                 <line x1="650" y1="400" x2="750" y2="400" stroke="white" stroke-width="2" />
+                 <line x1="700" y1="410" x2="780" y2="410" stroke="white" stroke-width="2" />
+                 <line x1="680" y1="420" x2="760" y2="420" stroke="white" stroke-width="2" />
 
-                         <line x1="300" y1="400" x2="400" y2="400" stroke="white" stroke-width="2" />
-                         <line x1="350" y1="410" x2="430" y2="410" stroke="white" stroke-width="2" />
-                         <line x1="330" y1="420" x2="410" y2="420" stroke="white" stroke-width="2" />
+                 <line x1="1000" y1="430" x2="1100" y2="430" stroke="white" stroke-width="2" />
+                 <line x1="1050" y1="440" x2="1130" y2="440" stroke="white" stroke-width="2" />
+                 <line x1="1030" y1="450" x2="1110" y2="450" stroke="white" stroke-width="2" />
 
-                         <line x1="850" y1="350" x2="950" y2="350" stroke="white" stroke-width="2" />
-                         <line x1="900" y1="360" x2="980" y2="360" stroke="white" stroke-width="2" />
-                         <line x1="880" y1="370" x2="960" y2="370" stroke="white" stroke-width="2" />
+                 <!-- boat -->
+                 <polygon points="550,425 450,425 420,375 580,375" fill="brown" />
+                 <line x1="500" y1="375" x2="500" y2="250" stroke="white" stroke-width="3"/>
+                 <polygon points="560,275 500,350 500,250" fill="white" stroke="black" stroke-width="1"/>
 
-                         <line x1="650" y1="400" x2="750" y2="400" stroke="white" stroke-width="2" />
-                         <line x1="700" y1="410" x2="780" y2="410" stroke="white" stroke-width="2" />
-                         <line x1="680" y1="420" x2="760" y2="420" stroke="white" stroke-width="2" />
+            </svg>
+            <hr class="space_before_paragraph">
 
-                         <line x1="1000" y1="430" x2="1100" y2="430" stroke="white" stroke-width="2" />
-                         <line x1="1050" y1="440" x2="1130" y2="440" stroke="white" stroke-width="2" />
-                         <line x1="1030" y1="450" x2="1110" y2="450" stroke="white" stroke-width="2" />
+            <h2 class="space_before_paragraph space_before_heading">Assignment 03. <br>Visualization of Video Game Sales Data.</h2>
+            <hr class="space_before_paragraph">
 
-                         <!-- boat -->
-                         <polygon points="550,425 450,425 420,375 580,375" fill="brown" />
-                         <line x1="500" y1="375" x2="500" y2="250" stroke="white" stroke-width="3"/>
-                         <polygon points="560,275 500,350 500,250" fill="white" stroke="black" stroke-width="1"/>
+            <p class="space_before_paragraph"><b>Visualization 01:</b> Global Sales by Genre and Platform.</p>
 
-                    </svg>
-                    <hr class="space_before_heading">
+            <div id="vis" class="space_before_paragraph"></div>
+            <hr class="space_before_paragraph">
 
-            </article>
-            
-        </div>
+            <p class="space_before_paragraph"><b>Visualization 02:</b> Sales Over Time by Platform and Genre.</p>
+            <hr>
 
-        <div class="container">
-            <!-- visualization goes into this div you can create multiple divs and give them IDs -->
-          <div id="view">
-          </div>
-        </div>
-          <script type="module" src="vis.js"></script>
+        </article>
+    </div>
 
-    </body>
-
+    <script>
+        const vegaData = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "Global Sales by Genre and Platform",
+            "data": {
+                "url": "https://raw.githubusercontent.com/SIAT-IAT-355/A3-Intro-to-vegalite/c9e00be0694aae5c1b1f12c0576d1269a0cf897c/dataset/videogames_long.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "transform": [
+                {
+                    "filter": "datum.global_sales != null && datum.global_sales >= 0"
+                }
+            ],
+            "mark": "bar",
+            "encoding": {
+                "x": {
+                    "field": "platform",
+                    "type": "nominal",
+                    "axis": {
+                        "title": "Platform",
+                        "labelAngle": -45
+                    }
+                },
+                "y": {
+                    "aggregate": "sum",
+                    "field": "global_sales",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Total Global Sales (in millions)"
+                    }
+                },
+                "color": {
+                    "field": "genre",
+                    "type": "nominal",
+                    "legend": {
+                        "title": "Genre"
+                    }
+                },
+                "tooltip": [
+                    {"field": "genre", "type": "nominal"},
+                    {"field": "platform", "type": "nominal"},
+                    {
+                        "aggregate": "sum",
+                        "field": "global_sales",
+                        "type": "quantitative",
+                        "title": "Total Global Sales"
+                    }
+                ]
+            }
+        };
+    
+        vegaEmbed('#vis', vegaData, {renderer: 'svg'})
+            .then(result => {
+            })
+            .catch(console.error);
+    </script>
+    
+</body>
 </html>
