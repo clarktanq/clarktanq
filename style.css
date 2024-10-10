@@ -13,6 +13,28 @@ body {
     flex-wrap: wrap;
 }
 
+.intro-section {
+    background-image: url('img/homeBG02.gif');
+    /* background-size: cover; */
+    background-size: 100% auto;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 50px;
+    color: white;
+    /* text-align: center; */
+    width: 100%;
+}
+
+.remove-margins {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.remove-paddings {
+    padding-left: 0;
+    padding-right: 0;
+}
+
 .select {
     background: #2a2f3b;
     color: #fff;
@@ -131,8 +153,8 @@ li {
 }
 
 .wrapper > * {
-    padding: 10px;
-    margin: 10px;
+    /* padding: 10px;
+    margin: 10px; */
     flex: 1 100%;
     border-radius: 10px;
 }
@@ -175,7 +197,9 @@ li {
 
 .navbar a {
     position: relative;
-    margin-left: 30px;
+    /* margin-left: 30px; */
+    padding-left: 15px;
+    padding-right: 15px;
 
     font-size: 1rem;
     color: blue;
