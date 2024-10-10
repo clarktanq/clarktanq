@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 02: Vega-Lite</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite-api@5.6.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-tooltip"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.22.1/build/vega.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.7.0/build/vega-lite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.19.1/build/vega-embed.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.12.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.21.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.2"></script>
+
+
+    <style id="vega-tooltip-style">
+        #vg-tooltip-element {
+            visibility: hidden;
+            padding: 8px;
+            position: fixed;
+            z-index: 1000;
+            font-family: sans-serif;
+            font-size: 11px;
+            border-radius: 3px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid #d9d9d9;
+            color: black;
+        }
+        #vg-tooltip-element.visible {
+            visibility: visible;
+        }
+        #vg-tooltip-element h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+        #vg-tooltip-element table {
+            border-spacing: 0;
+        }
+        #vg-tooltip-element table tr {
+            border: none;
+        }
+        #vg-tooltip-element table tr td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-top: 2px;
+            padding-bottom: 2px;
+        }
+        #vg-tooltip-element table tr td.key {
+            color: #808080;
+            max-width: 150px;
+            text-align: right;
+            padding-right: 4px;
+        }
+        #vg-tooltip-element table tr td.value {
+            display: block;
+            max-width: 300px;
+            max-height: 7em;
+            text-align: left;
+        }
+        #vg-tooltip-element.dark-theme {
+            background-color: rgba(32, 32, 32, 0.9);
+            border: 1px solid #f5f5f5;
+            color: white;
+        }
+        #vg-tooltip-element.dark-theme td.key {
+            color: #bfbfbf;
+        }
+    </style>
+
+    <style id="vega-embed-style">
+        .vega-embed {
+            position: relative;
+            display: inline-block;
+            box-sizing: border-box;
+        }
+        .vega-embed.has-actions {
+            padding-right: 38px;
+        }
+        .vega-embed details:not([open]) > :not(summary) {
+            display: none !important;
+        }
+        .vega-embed summary {
+            list-style: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 6px;
+            z-index: 1000;
+            background: white;
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            color: #1b1e23;
+            border: 1px solid #aaa;
+            border-radius: 999px;
+            opacity: 0.2;
+            transition: opacity 0.4s ease-in;
+            cursor: pointer;
+            line-height: 0px;
+        }
+        .vega-embed summary::-webkit-details-marker {
+            display: none;
+        }
+        .vega-embed summary:active {
+            box-shadow: #aaa 0px 0px 0px 1px inset;
+        }
+        .vega-embed summary svg {
+            width: 14px;
+            height: 14px;
+        }
+        .vega-embed details[open] summary {
+            opacity: 0.7;
+        }
+        .vega-embed:hover summary, .vega-embed:focus-within summary {
+            opacity: 1 !important;
+            transition: opacity 0.2s ease;
+        }
+        .vega-embed .vega-actions {
+            position: absolute;
+            z-index: 1001;
+            top: 35px;
+            right: -9px;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 8px;
+            padding-top: 8px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.2);
+            border: 1px solid #d9d9d9;
+            background: white;
+            animation-duration: 0.15s;
+            animation-name: scale-in;
+            animation-timing-function: cubic-bezier(0.2, 0, 0.13, 1.5);
+            text-align: left;
+        }
+        .vega-embed .vega-actions a {
+            padding: 8px 16px;
+            font-family: sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            color: #434a56;
+            text-decoration: none;
+        }
+        .vega-embed .vega-actions a:hover, .vega-embed .vega-actions a:focus {
+            background-color: #f7f7f9;
+            color: black;
+        }
+        .vega-embed .vega-actions::before, .vega-embed .vega-actions::after {
+            content: "";
+            display: inline-block;
+            position: absolute;
+        }
+        .vega-embed .vega-actions::before {
+            left: auto;
+            right: 14px;
+            top: -16px;
+            border: 8px solid rgba(0, 0, 0, 0);
+            border-bottom-color: #d9d9d9;
+        }
+        .vega-embed .vega-actions::after {
+            left: auto;
+            right: 15px;
+            top: -14px;
+            border: 7px solid rgba(0, 0, 0, 0);
+            border-bottom-color: #fff;
+        }
+        .vega-embed .chart-wrapper.fit-x {
+            width: 100%;
+        }
+        .vega-embed .chart-wrapper.fit-y {
+            height: 100%;
+        }
+
+        .vega-embed-wrapper {
+            max-width: 100%;
+            overflow: auto;
+            padding-right: 14px;
+        }
+
+        @keyframes scale-in {
+            from {
+                opacity: 0;
+                transform: scale(0.6);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+
+    <script>
+        const options = {
+            config: {
+                // Vega-Lite default configuration
+            },
+            init: (view) => {
+                // initialize tooltip handler
+                view.tooltip(new vegaTooltip.Handler().call);
+            },
+            view: {
+                // view constructor options
+                loader: vega.loader({
+                    baseURL: "https://cdn.jsdelivr.net/npm/vega-datasets@2/",
+                }),
+                renderer: "canvas",
+            },
+        };
+
+        // register vega and vega-lite with the API
+        vl.register(vega, vegaLite, options);
+    </script>
+
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">Clark Tanquerido</a>
+        <nav class="navbar">
+            <a href="index.html">Home</a>
+            <a href="visualizations.html">Assignment 01</a>
+            <a href="assignment02.html">Assignment 02</a>
+        </nav>
+    </header>
+
+    <div class="wrapper">
+        <article class="main">
+            <h1 class="space_before_paragraph h1_margins_visualizatios">Visualizations</h1>
+            <hr>
+
+            <h2 class="space_before_paragraph space_before_heading">Assignment 03. <br>Visualization of Video Game Sales Data.</h2>
+            <hr class="space_before_paragraph">
+
+            <p class="space_before_paragraph"><b>Visualization 01:</b> Global Sales by Genre and Platform.</p>
+
+            <div id="vis" class="space_before_paragraph"></div>
+            <hr class="space_before_paragraph">
+
+            <p class="space_before_paragraph"><b>Visualization 02:</b> Sales Over Time by Platform and Genre.</p>
+            <div id="sales-over-time-by-genre-and-platform"></div>
+            <div id="sales-over-time-by-platform"></div>
+            <div id="sales-over-time-by-genre"></div>
+            <hr class="space_before_paragraph">
+
+            <p class="space_before_paragraph"><b>Visualization 03:</b> Regional Sales vs. Platform.</p>
+            <div id="eu-sales-chart"></div>
+            <div id="na-sales-platform"></div>
+            <div id="jp-sales-platform"></div>
+            <hr class="space_before_paragraph">
+
+            <p class="space_before_paragraph"><b>Visualization 04:</b> Regional Sales by Genre.</p>
+            <div id="regional-sales-genre" class="space_before_paragraph"></div>
+            <div id="eu-sales-genre"></div>
+            <div id="na-sales-genre"></div>
+            <div id="jp-sales-genre"></div>
+            <div id="other-sales-genre"></div>
+            <hr class="space_before_paragraph">
+
+        </article>
+    </div>
+
+    <!-- VIS 01 -->
+    <script>
+        const vegaData = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "Global Sales by Genre and Platform",
+            "data": {
+                "url": "https://raw.githubusercontent.com/SIAT-IAT-355/A3-Intro-to-vegalite/c9e00be0694aae5c1b1f12c0576d1269a0cf897c/dataset/videogames_long.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "transform": [
+                {
+                    "filter": "datum.global_sales != null && datum.global_sales >= 0"
+                }
+            ],
+            "mark": "bar",
+            "encoding": {
+                "x": {
+                    "field": "platform",
+                    "type": "nominal",
+                    "axis": {
+                        "title": "Platform",
+                        "labelAngle": -45
+                    }
+                },
+                "y": {
+                    "aggregate": "sum",
+                    "field": "global_sales",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Total Global Sales (in millions)"
+                    }
+                },
+                "color": {
+                    "field": "genre",
+                    "type": "nominal",
+                    "legend": {
+                        "title": "Genre"
+                    }
+                },
+                "tooltip": [
+                    {"field": "genre", "type": "nominal"},
+                    {"field": "platform", "type": "nominal"},
+                    {
+                        "aggregate": "sum",
+                        "field": "global_sales",
+                        "type": "quantitative",
+                        "title": "Total Global Sales"
+                    }
+                ]
+            }
+        };
+
+        
+    
+        vegaEmbed('#vis', vegaData, {renderer: 'svg'})
+            .then(result => {
+            })
+            .catch(console.error);
+    </script>
+
+    <!-- VIS 02 -->
+    <script type="text/javascript">
+        var spec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "Video Game Sales Over Time by Genre and Platform",
+            "title": {
+                "text": "Sales Over Time by Genre and Platform",
+                "fontSize": 20,
+                "anchor": "middle"
+            },
+            "data": {
+                "url": "https://raw.githubusercontent.com/SIAT-IAT-355/A3-Intro-to-vegalite/c9e00be0694aae5c1b1f12c0576d1269a0cf897c/dataset/videogames_long.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "transform": [
+                {
+                    "filter": "datum.sales_amount != null"
+                }
+            ],
+            "mark": "bar",
+            "width": 800, // Width of the visualization
+            "height": 400, // Height of the visualization
+            "encoding": {
+                "x": {
+                    "field": "year",
+                    "type": "temporal",
+                    "timeUnit": "year",
+                    "axis": {
+                        "title": "Year of Release"
+                    }
+                },
+                "y": {
+                    "aggregate": "sum",
+                    "field": "sales_amount",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Total Sales (in millions)"
+                    }
+                },
+                "color": {
+                    "field": "platform",
+                    "type": "nominal",
+                    "legend": {
+                        "title": "Genre"
+                    }
+                },
+                "tooltip": [
+                    {"field": "year", "type": "temporal", "title": "Release Year"},
+                    {"field": "platform", "type": "nominal", "title": "Genre"},
+                    {"field": "genre", "type": "nominal", "title": "Platform"},
+                    {"field": "sales_amount", "type": "quantitative", "title": "Sales Amount"}
+                ]
+            }
+        };
+
+        // Embed the visualization
+        vegaEmbed('#sales-over-time-by-genre-and-platform', spec).then(function(result) {
+            // Handle the result
+        }).catch(console.error);
+    </script>
+
+    <script type="text/javascript">
+        var vegaLiteSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "description": "Video Game Sales Over Time by Platform",
+        "title": {
+            "text": "Sales Over Time by Platform",
+            "fontSize": 20,
+            "anchor": "middle"
+        },
+        "data": {
+            "url": "https://raw.githubusercontent.com/SIAT-IAT-355/A3-Intro-to-vegalite/c9e00be0694aae5c1b1f12c0576d1269a0cf897c/dataset/videogames_long.csv",
+            "format": {
+            "type": "csv"
+            }
+        },
+        "transform": [
+            {
+            "filter": "datum.sales_amount != null"
+            }
+        ],
+        "facet": {
+            "row": {
+            "field": "platform",
+            "type": "nominal",
+            "header": {
+                "title": "Platform",
+                "labelFontSize": 12
+            }
+            }
+        },
+        "spec": {
+            "mark": "bar",
+            "width": 400,
+            "height": 200,
+            "encoding": {
+            "x": {
+                "field": "year",
+                "type": "temporal",
+                "timeUnit": "year",
+                "axis": {
+                "title": "Year of Release"
+                }
+            },
+            "y": {
+                "aggregate": "sum",
+                "field": "sales_amount",
+                "type": "quantitative",
+                "axis": {
+                "title": "Total Sales (in millions)"
+                }
+            },
+            "color": {
+                "field": "platform",
+                "type": "nominal",
+                "legend": null
+            },
+            "tooltip": [
+                {"field": "year", "type": "temporal", "title": "Release Year"},
+                {"field": "platform", "type": "nominal", "title": "Platform"},
+                {"field": "sales_amount", "type": "quantitative", "title": "Sales Amount"}
+            ]
+            }
+        },
+        "resolve": {
+            "scale": {
+            "y": "shared"
+            }
+        }
+        };
+
+        // Embed the Vega-Lite spec in the #vis container
+        vegaEmbed('#sales-over-time-by-platform', vegaLiteSpec).then(function(result) {
+        // Access the Vega view instance as result.view
+        }).catch(console.error);
+    </script>
+
+    <script type="text/javascript">
+        var spec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "description": "Video Game Sales Over Time by Genre",
+        "title": {
+            "text": "Sales Over Time by Genre",
+            "fontSize": 20,
+            "anchor": "middle"
+        },
+        "data": {
+            "url": "https://raw.githubusercontent.com/SIAT-IAT-355/A3-Intro-to-vegalite/c9e00be0694aae5c1b1f12c0576d1269a0cf897c/dataset/videogames_long.csv",
+            "format": {
+            "type": "csv"
+            }
+        },
+        "transform": [
+            {
+            "filter": "datum.sales_amount != null"
+            }
+        ],
+        "facet": {
+            "row": {
+            "field": "genre",
+            "type": "nominal",
+            "header": {
+                "title": "Genre",
+                "labelFontSize": 12
+            }
+            }
+        },
+        "spec": {
+            "mark": "bar",
+            "width": 400,
+            "height": 200,
+            "encoding": {
+            "x": {
+                "field": "year",
+                "type": "temporal",
+                "timeUnit": "year",
+                "axis": {
+                "title": "Year of Release"
+                }
+            },
+            "y": {
+                "aggregate": "sum",
+                "field": "sales_amount",
+                "type": "quantitative",
+                "axis": {
+                "title": "Total Sales (in millions)"
+                }
+            },
+            "color": {
+                "field": "genre",
+                "type": "nominal",
+                "legend": null
+            },
+            "tooltip": [
+                {"field": "year", "type": "temporal", "title": "Release Year"},
+                {"field": "genre", "type": "nominal", "title": "Genre"},
+                {"field": "sales_amount", "type": "quantitative", "title": "Sales Amount"}
+            ]
+            }
+        },
+        "resolve": {
+            "scale": {
+            "y": "shared"
+            }
+        }
+        };
+
+        // Embed the visualization
+        vegaEmbed('#sales-over-time-by-genre', spec).then(function(result) {
+        // Handle the result
+        }).catch(console.error);
+    </script>
+
+    <!-- VIS 03 -->
+     <script>
+        const euSalesChartData = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "EU Sales by Platform",
+            "title": {
+                "text": "EU Sales",
+                "fontSize": 20,
+                "anchor": "middle"
+            },
+            "data": {
+                "url": "https://raw.githubusercontent.com/SIAT-IAT-355/A3-Intro-to-vegalite/c9e00be0694aae5c1b1f12c0576d1269a0cf897c/dataset/videogames_long.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "transform": [
+                {
+                    "filter": "datum.sales_region == 'eu_sales' && datum.sales_amount != null"
+                },
+                {
+                    "fold": ["eu_sales"],
+                    "as": ["region", "sales"]
+                }
+            ],
+            "mark": "bar",
+            "encoding": {
+                "x": {
+                    "field": "platform",
+                    "type": "nominal",
+                    "axis": {
+                        "title": "Platform",
+                        "labelAngle": -45
+                    }
+                },
+                "y": {
+                    "aggregate": "sum",
+                    "field": "sales_amount",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Total Sales Amount (in millions)"
+                    }
+                },
+                "color": {
+                    "value": "#1f77b4"
+                },
+                "tooltip": [
+                    {"field": "platform", "type": "nominal"},
+                    {"field": "sales_region", "type": "nominal"},
+                    {"field": "sales_amount", "type": "quantitative", "title": "Sales Amount"}
+                ]
+            }
+        };
+
+        vegaEmbed('#eu-sales-chart', euSalesChartData, {renderer: 'svg'})
+            .then(result => {
+            })
+            .catch(console.error);
+    </script>
+
+    <script>
+        const naSalesPlatformData = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "NA Sales by Platform",
+            "title": {
+                "text": "NA Sales",
+                "fontSize": 20,
+                "anchor": "middle"
+            },
+            "data": {
+                "url": "https://raw.githubusercontent.com/SIAT-IAT-355/A3-Intro-to-vegalite/c9e00be0694aae5c1b1f12c0576d1269a0cf897c/dataset/videogames_long.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "transform": [
+                {
+                    "filter": "datum.sales_region == 'na_sales' && datum.sales_amount != null"
+                },
+                {
+                    "fold": ["na_sales"],
+                    "as": ["region", "sales"]
+                }
+            ],
+            "mark": "bar",
+            "encoding": {
+                "x": {
+                    "field": "platform",
+                    "type": "nominal",
+                    "axis": {
+                        "title": "Platform",
+                        "labelAngle": -45
+                    }
+                },
+                "y": {
+                    "aggregate": "sum",
+                    "field": "sales_amount",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Total Sales Amount (in millions)"
+                    }
+                },
+                "color": {
+                    "value": "#ff7f0e"
+                },
+                "tooltip": [
+                    {"field": "platform", "type": "nominal"},
+                    {"field": "sales_region", "type": "nominal"},
+                    {"field": "sales_amount", "type": "quantitative", "title": "Sales Amount"}
+                ]
+            }
+        };
+
+        vegaEmbed('#na-sales-platform', naSalesPlatformData, { renderer: 'svg' })
+            .then(result => {
+                // Visualization successfully rendered
+            })
+            .catch(console.error);
+    </script>
+
+    <script>
+        const jpSalesPlatformData = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "JP Sales by Platform",
+            "title": {
+                "text": "JP Sales",
+                "fontSize": 20,
+                "anchor": "middle"
+            },
+            "data": {
+                "url": "https://raw.githubusercontent.com/SIAT-IAT-355/A3-Intro-to-vegalite/c9e00be0694aae5c1b1f12c0576d1269a0cf897c/dataset/videogames_long.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "transform": [
+                {
+                    "filter": "datum.sales_region == 'jp_sales' && datum.sales_amount != null"
+                },
+                {
+                    "fold": ["jp_sales"],
+                    "as": ["region", "sales"]
+                }
+            ],
+            "mark": "bar",
+            "encoding": {
+                "x": {
+                    "field": "platform",
+                    "type": "nominal",
+                    "axis": {
+                        "title": "Platform",
+                        "labelAngle": -45
+                    }
+                },
+                "y": {
+                    "aggregate": "sum",
+                    "field": "sales_amount",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Total Sales Amount (in millions)"
+                    }
+                },
+                "color": {
+                    "value": "red"
+                },
+                "tooltip": [
+                    {"field": "platform", "type": "nominal"},
+                    {"field": "sales_region", "type": "nominal"},
+                    {"field": "sales_amount", "type": "quantitative", "title": "Sales Amount"}
+                ]
+            }
+        };
+
+        vegaEmbed('#jp-sales-platform', jpSalesPlatformData, { renderer: 'svg' })
+            .then(result => {
+                // Visualization successfully rendered
+            })
+            .catch(console.error);
+    </script>
+
+    <!-- VIS 04 -->
+    <script>
+        const regionalSalesGenreData = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "Total Sales by Genre in Each Region",
+            "title": {
+                "text": "Total Regional Sales by Genre",
+                "fontSize": 20,
+                "anchor": "middle"
+            },
+            "data": {
+                "url": "https://raw.githubusercontent.com/SIAT-IAT-355/A3-Intro-to-vegalite/c9e00be0694aae5c1b1f12c0576d1269a0cf897c/dataset/videogames_long.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "transform": [
+                {
+                    "filter": "datum.sales_amount != null"
+                },
+                {
+                    "aggregate": [
+                        {
+                            "op": "sum",
+                            "field": "sales_amount",
+                            "as": "total_sales"
+                        }
+                    ],
+                    "groupby": ["genre", "sales_region"]
+                }
+            ],
+            "mark": "bar",
+            "width": 800,
+            "height": 400,
+            "encoding": {
+                "x": {
+                    "field": "genre",
+                    "type": "nominal",
+                    "axis": {
+                        "title": "Genre",
+                        "labelAngle": -45
+                    }
+                },
+                "y": {
+                    "field": "total_sales",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Total Sales Amount (in millions)"
+                    }
+                },
+                "color": {
+                    "field": "sales_region",
+                    "type": "nominal",
+                    "legend": {
+                        "title": "Region"
+                    }
+                },
+                "tooltip": [
+                    {"field": "genre", "type": "nominal", "title": "Genre"},
+                    {"field": "sales_region", "type": "nominal", "title": "Region"},
+                    {"field": "total_sales", "type": "quantitative", "title": "Total Sales"}
+                ]
+            }
+        };
+
+        vegaEmbed('#regional-sales-genre', regionalSalesGenreData, { renderer: 'svg' })
+            .then(result => {
+                // Visualization successfully rendered
+            })
+            .catch(console.error);
+    </script>
+
+    <script>
+        const euSalesGenreData = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "EU Sales by Genre",
+            "title": {
+                "text": "Total EU Sales by Genre",
+                "fontSize": 20,
+                "anchor": "middle"
+            },
+            "data": {
+                "url": "https://raw.githubusercontent.com/SIAT-IAT-355/A3-Intro-to-vegalite/c9e00be0694aae5c1b1f12c0576d1269a0cf897c/dataset/videogames_long.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "transform": [
+                {
+                    "filter": "datum.sales_region == 'eu_sales' && datum.sales_amount != null"
+                },
+                {
+                    "aggregate": [
+                        {
+                            "op": "sum",
+                            "field": "sales_amount",
+                            "as": "total_sales"
+                        }
+                    ],
+                    "groupby": ["genre"]
+                }
+            ],
+            "mark": "bar",
+            "width": 350,
+            "height": 350,
+            "encoding": {
+                "x": {
+                    "field": "genre",
+                    "type": "nominal",
+                    "axis": {
+                        "title": "Genre",
+                        "labelAngle": -45
+                    }
+                },
+                "y": {
+                    "field": "total_sales",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Total Sales Amount (in millions)"
+                    }
+                },
+                "color": {
+                    "value": "#1f77b4"
+                },
+                "tooltip": [
+                    {"field": "genre", "type": "nominal", "title": "Genre"},
+                    {"field": "total_sales", "type": "quantitative", "title": "Total Sales"}
+                ]
+            }
+        };
+
+        vegaEmbed('#eu-sales-genre', euSalesGenreData, { renderer: 'svg' })
+            .then(result => {
+                // Visualization successfully rendered
+            })
+            .catch(console.error);
+    </script>
+
+    <script>
+        const naSalesGenreData = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "NA Sales by Genre",
+            "title": {
+                "text": "Total NA Sales by Genre",
+                "fontSize": 20,
+                "anchor": "middle"
+            },
+            "data": {
+                "url": "https://raw.githubusercontent.com/SIAT-IAT-355/A3-Intro-to-vegalite/c9e00be0694aae5c1b1f12c0576d1269a0cf897c/dataset/videogames_long.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "transform": [
+                {
+                    "filter": "datum.sales_region == 'na_sales' && datum.sales_amount != null"
+                },
+                {
+                    "aggregate": [
+                        {
+                            "op": "sum",
+                            "field": "sales_amount",
+                            "as": "total_sales"
+                        }
+                    ],
+                    "groupby": ["genre"]
+                }
+            ],
+            "mark": "bar",
+            "width": 350,
+            "height": 350,
+            "encoding": {
+                "x": {
+                    "field": "genre",
+                    "type": "nominal",
+                    "axis": {
+                        "title": "Genre",
+                        "labelAngle": -45
+                    }
+                },
+                "y": {
+                    "field": "total_sales",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Total Sales Amount (in millions)"
+                    }
+                },
+                "color": {
+                    "value": "#ff7f0e"
+                },
+                "tooltip": [
+                    {"field": "genre", "type": "nominal", "title": "Genre"},
+                    {"field": "total_sales", "type": "quantitative", "title": "Total Sales (in millions)"}
+                ]
+            }
+        };
+
+        vegaEmbed('#na-sales-genre', naSalesGenreData)
+            .then(result => {
+                // Visualization successfully rendered
+            })
+            .catch(console.error);
+    </script>
+
+    <script>
+        const jpSalesGenreData = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "JP Sales by Genre",
+            "title": {
+                "text": "Total JP Sales by Genre",
+                "fontSize": 20,
+                "anchor": "middle"
+            },
+            "data": {
+                "url": "https://raw.githubusercontent.com/SIAT-IAT-355/A3-Intro-to-vegalite/c9e00be0694aae5c1b1f12c0576d1269a0cf897c/dataset/videogames_long.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "transform": [
+                {
+                    "filter": "datum.sales_region == 'jp_sales' && datum.sales_amount != null"
+                },
+                {
+                    "aggregate": [
+                        {
+                            "op": "sum",
+                            "field": "sales_amount",
+                            "as": "total_sales"
+                        }
+                    ],
+                    "groupby": ["genre"]
+                }
+            ],
+            "mark": "bar",
+            "width": 350,
+            "height": 350,
+            "encoding": {
+                "x": {
+                    "field": "genre",
+                    "type": "nominal",
+                    "axis": {
+                        "title": "Genre",
+                        "labelAngle": -45
+                    }
+                },
+                "y": {
+                    "field": "total_sales",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Total Sales Amount (in millions)"
+                    }
+                },
+                "color": {
+                    "value": "red"
+                },
+                "tooltip": [
+                    {"field": "genre", "type": "nominal", "title": "Genre"},
+                    {"field": "total_sales", "type": "quantitative", "title": "Total Sales (in millions)"}
+                ]
+            }
+        };
+
+        vegaEmbed('#jp-sales-genre', jpSalesGenreData)
+            .then(result => {
+                // Visualization successfully rendered
+            })
+            .catch(console.error);
+    </script>
+
+    <script>
+        const otherSalesGenreData = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "Other Sales by Genre",
+            "title": {
+                "text": "Total Other Sales by Genre",
+                "fontSize": 20,
+                "anchor": "middle"
+            },
+            "data": {
+                "url": "https://raw.githubusercontent.com/SIAT-IAT-355/A3-Intro-to-vegalite/c9e00be0694aae5c1b1f12c0576d1269a0cf897c/dataset/videogames_long.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "transform": [
+                {
+                    "filter": "datum.sales_region == 'other_sales' && datum.sales_amount != null"
+                },
+                {
+                    "aggregate": [
+                        {
+                            "op": "sum",
+                            "field": "sales_amount",
+                            "as": "total_sales"
+                        }
+                    ],
+                    "groupby": ["genre"]
+                }
+            ],
+            "mark": "bar",
+            "width": 350,
+            "height": 350,
+            "encoding": {
+                "x": {
+                    "field": "genre",
+                    "type": "nominal",
+                    "axis": {
+                        "title": "Genre",
+                        "labelAngle": -45
+                    }
+                },
+                "y": {
+                    "field": "total_sales",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Total Sales Amount (in millions)"
+                    }
+                },
+                "color": {
+                    "value": "turquoise"
+                },
+                "tooltip": [
+                    {"field": "genre", "type": "nominal", "title": "Genre"},
+                    {"field": "total_sales", "type": "quantitative", "title": "Total Sales (in millions)"}
+                ]
+            }
+        };
+
+        vegaEmbed('#other-sales-genre', otherSalesGenreData)
+            .then(result => {
+                // Visualization successfully rendered
+            })
+            .catch(console.error);
+    </script>
+
+</body>
+</html>
